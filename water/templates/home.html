@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="hero-content">
+        <h2>Reliable Water Services for Your Home</h2>
+        <p>Apply for new water installations or submit complaints easily and quickly through our platform.</p>
+        <a href="{% url 'login' %}" class="btn">Get Started</a>
+    </div>
+</section>
+
+{% endblock %}

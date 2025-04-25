@@ -1,0 +1,79 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="login-form">
+    <div class="container">
+        <h2>Login</h2>
+        <!-- Login Form -->
+        <form id="loginForm" method="POST">
+            {% csrf_token %}
+            
+            <!-- Username Field -->
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" class="form-control" required />
+            </div>
+            
+            <!-- Password Field -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-control" required />
+            </div>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Login</button>
+            
+            <!-- Error Message -->
+            <div id="error-message" class="error-message"></div>
+        </form>
+
+        <!-- Links for Signup and Forgot Password -->
+        <div class="links">
+            <a href="/signup/" class="signup-link">Don't have an account? Sign up</a>
+            <br>
+            <a href="/forgot-password/" class="forgot-password-link">Forgot password?</a>
+        </div>
+    </div>
+</section>
+
+<!-- JavaScript for handling form submission via AJAX -->
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+
+        fetch('/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                'username': username,
+                'password': password
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Login successful') {
+                // Store the username in localStorage
+                localStorage.setItem('username', username);
+
+                // Redirect to dashboard
+                window.location.href = '/dashboard/';
+            } else {
+                document.getElementById('error-message').textContent = data.error || 'Invalid login credentials.';
+            }
+        })
+        .catch(error => {
+            document.getElementById('error-message').textContent = 'Error: ' + error.message;
+        });
+    });
+</script>
+{% endblock %}

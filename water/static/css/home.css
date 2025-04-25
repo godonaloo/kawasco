@@ -1,0 +1,90 @@
+/* General body styling */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Hero Section Styling */
+.hero {
+  background: linear-gradient(to right, rgba(0, 123, 255, 0.8), rgba(0, 123, 255, 0.4)), url('/static/img/water.jpg') no-repeat center center;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  text-align: center;
+  padding: 40px;
+  position: relative;
+}
+
+/* Hero Content */
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.hero h2 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  line-height: 1.4;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+/* Button styling */
+.btn {
+  background-color: #007BFF;
+  color: white;
+  padding: 15px 40px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 30px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.btn:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
+  box-shadow: 0 8px 16px rgba(0, 123, 255, 0.4);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .hero h2 {
+      font-size: 2.8rem;
+  }
+
+  .hero p {
+      font-size: 1.1rem;
+  }
+
+  .btn {
+      padding: 12px 30px;
+      font-size: 1rem;
+  }
+}
+
+/* Visual Feedback for Button Focus */
+.btn:focus {
+  outline: none;
+  border: 3px solid #0056b3;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.8);
+}

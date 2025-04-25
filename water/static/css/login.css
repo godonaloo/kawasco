@@ -1,0 +1,126 @@
+/* General Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f4f7fc;
+}
+
+/* Container for the login form */
+.login-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #e9eff8;  /* Light background color */
+    padding: 20px;
+}
+
+/* Inner container for form */
+.container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Heading */
+h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Form Group (username & password fields) */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Label styling */
+label {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Input field styling */
+.input, .form-control {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Submit Button Styling */
+.btn {
+    background-color: #007bff;
+    color: white;
+    padding: 14px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Links styling for Signup and Forgot Password */
+.links {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signup-link, .forgot-password-link {
+    font-size: 1rem;
+    color: #007bff;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.signup-link:hover, .forgot-password-link:hover {
+    text-decoration: underline;
+}
+
+/* Error Message Styling */
+.error-message {
+    color: red;
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    .btn {
+        font-size: 1rem;
+    }
+
+    .form-group input,
+    .form-group label {
+        font-size: 0.9rem;
+    }
+}

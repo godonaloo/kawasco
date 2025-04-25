@@ -1,0 +1,331 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="sidebar">
+        <h3 id="welcome-message">Welcome!</h3>
+        <nav>
+            <ul>
+                <li><a href="#" id="dashboard-link" class="active">Dashboard</a></li>
+                <li><a href="#" id="applications-link">Applications</a></li>
+                <li><a href="#" id="complaints-link">Complaints</a></li>
+            </ul>
+            <button id="logout-link" class="btn">Log Out</button>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <!-- Dashboard Content -->
+        <div id="dashboard-content" class="content-section">
+            <h2>Dashboard</h2>
+            <div class="dashboard-stats">
+                <div class="stat-box">
+                    <h3>Completed Applications</h3>
+                    <p id="completed-count">0</p>
+                </div>
+                <div class="stat-box">
+                    <h3>Pending Applications</h3>
+                    <p id="pending-count">0</p>
+                </div>
+                <div class="stat-box">
+                    <h3>Applications In Progress</h3>
+                    <p id="in-progress-count">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications Content -->
+        <div id="applications-content" class="content-section" style="display: none;">
+            <h2>My Applications</h2>
+            <div class="top-right-btn">
+                <button id="new-application-btn" class="btn">New Application</button>
+            </div>
+            <table id="applications-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Phone Number</th>
+                        <th>Description</th>
+                        <th>Application Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamically populated applications -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Complaints Content -->
+        <div id="complaints-content" class="content-section" style="display: none;">
+            <h2>My Complaints</h2>
+            <div class="top-right-btn">
+                <button id="new-complaint-btn" class="btn">New Complaint</button>
+            </div>
+            <table id="complaints-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Application ID</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Response</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamically populated complaints -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Application Submission Form -->
+        <div id="application-form" class="form-container" style="display: none;">
+            <h3>Submit New Application</h3>
+            <form id="applicationForm">
+                <label for="phone_number">Phone Number</label>
+                <input type="text" id="phone_number" name="phone_number" required />
+
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required></textarea>
+
+                <button type="submit" class="btn">Submit Application</button>
+                <button type="button" id="cancel-application" class="btn">Cancel</button>
+            </form>
+        </div>
+
+        <!-- Complaint Submission Form -->
+        <div id="complaint-form" class="form-container" style="display: none;">
+            <h3>Submit New Complaint</h3>
+            <form id="complaintForm">
+                <label for="application_id">Application ID</label>
+                <input type="text" id="application_id" name="application_id" required />
+
+                <label for="message">Message</label>
+                <textarea id="message" name="message" required></textarea>
+
+                <button type="submit" class="btn">Submit Complaint</button>
+                <button type="button" id="cancel-complaint" class="btn">Cancel</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const username = localStorage.getItem('username');
+
+        // If the username is null or empty, redirect to login page
+        if (!username) {
+            window.location.href = '/login/';  // Redirect to login page
+            alert('Please Login');
+        } else {
+            // Set welcome message with the username
+            document.getElementById('welcome-message').textContent = `Welcome, ${username}!`;
+        }
+
+        // Function to fetch and display general statistics (Completed, Pending, In Progress)
+        function fetchDashboardStats() {
+            // Fetch completed applications count
+            fetch(`/completed-applications/?username=${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('completed-count').textContent = data.completed_applications;
+                })
+                .catch(error => console.error('Error fetching completed applications:', error));
+
+            // Fetch pending applications count
+            fetch(`/pending-applications/?username=${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('pending-count').textContent = data.pending_applications;
+                })
+                .catch(error => console.error('Error fetching pending applications:', error));
+
+            // Fetch in-progress applications count
+            fetch(`/in-progress-applications/?username=${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('in-progress-count').textContent = data.in_progress_applications;
+                })
+                .catch(error => console.error('Error fetching in-progress applications:', error));
+        }
+
+        // Load Dashboard stats by default
+        fetchDashboardStats();
+
+        // Toggle between Dashboard, Applications, and Complaints content
+        document.getElementById('dashboard-link').addEventListener('click', function() {
+            setActiveLink('dashboard');
+            document.getElementById('dashboard-content').style.display = 'block';
+            document.getElementById('applications-content').style.display = 'none';
+            document.getElementById('complaints-content').style.display = 'none';
+        });
+
+        document.getElementById('applications-link').addEventListener('click', function() {
+            setActiveLink('applications');
+            document.getElementById('dashboard-content').style.display = 'none';
+            document.getElementById('applications-content').style.display = 'block';
+            document.getElementById('complaints-content').style.display = 'none';
+            fetchApplications();
+        });
+
+        document.getElementById('complaints-link').addEventListener('click', function() {
+            setActiveLink('complaints');
+            document.getElementById('dashboard-content').style.display = 'none';
+            document.getElementById('applications-content').style.display = 'none';
+            document.getElementById('complaints-content').style.display = 'block';
+            fetchComplaints();
+        });
+
+        // Function to highlight the active link
+        function setActiveLink(activeSection) {
+            document.querySelectorAll('.sidebar nav ul li a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(`${activeSection}-link`).classList.add('active');
+        }
+
+        // Fetch applications and complaints when switching sections
+        function fetchApplications() {
+            fetch(`/applications/?username=${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    const applicationsTable = document.getElementById('applications-table').querySelector('tbody');
+                    applicationsTable.innerHTML = '';
+                    data.forEach(application => {
+                        const row = document.createElement('tr');
+                        // Convert application date to EAT
+                        const applicationDate = new Date(application.application_date);
+                        const formattedDate = applicationDate.toLocaleString('en-KE', { timeZone: 'Africa/Nairobi' });
+                        row.innerHTML = `
+                            <td>${application.id}</td>
+                            <td>${application.phone_number}</td>
+                            <td>${application.description}</td>
+                            <td>${formattedDate}</td>
+                            <td>${application.status}</td>
+                        `;
+                        applicationsTable.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching applications:', error));
+        }
+
+        function fetchComplaints() {
+            fetch(`/complaints/?username=${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    const complaintsTable = document.getElementById('complaints-table').querySelector('tbody');
+                    complaintsTable.innerHTML = '';
+                    data.forEach(complaint => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${complaint.id}</td>
+                            <td>${complaint.application_id}</td>
+                            <td>${complaint.message}</td>
+                            <td>${complaint.status}</td>
+                            <td>${complaint.response}</td>
+                        `;
+                        complaintsTable.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error fetching complaints:', error));
+        }
+
+        // Handle new application button
+        document.getElementById('new-application-btn').addEventListener('click', function() {
+            document.getElementById('applications-content').style.display = 'none';
+            document.getElementById('application-form').style.display = 'block';
+        });
+
+        // Handle application form submission
+        document.getElementById('applicationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = {
+                username: username,
+                phone_number: formData.get('phone_number'),
+                description: formData.get('description')
+            };
+
+            fetch('/applications/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Application submitted successfully');
+                document.getElementById('application-form').style.display = 'none';
+                document.getElementById('applications-content').style.display = 'block';
+                fetchApplications();
+            })
+            .catch(error => console.error('Error submitting application:', error));
+        });
+
+        // Cancel application form
+        document.getElementById('cancel-application').addEventListener('click', function() {
+            document.getElementById('application-form').style.display = 'none';
+            document.getElementById('applications-content').style.display = 'block';
+        });
+
+        // Handle new complaint button
+        document.getElementById('new-complaint-btn').addEventListener('click', function() {
+            document.getElementById('complaints-content').style.display = 'none';
+            document.getElementById('complaint-form').style.display = 'block';
+        });
+
+        // Handle complaint form submission
+        document.getElementById('complaintForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = {
+                username: username,
+                application_id: formData.get('application_id'),
+                message: formData.get('message')
+            };
+
+            fetch('/complaints/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Complaint submitted successfully');
+                document.getElementById('complaint-form').style.display = 'none';
+                document.getElementById('complaints-content').style.display = 'block';
+                fetchComplaints();
+            })
+            .catch(error => console.error('Error submitting complaint:', error));
+        });
+
+        // Cancel complaint form
+        document.getElementById('cancel-complaint').addEventListener('click', function() {
+            document.getElementById('complaint-form').style.display = 'none';
+            document.getElementById('complaints-content').style.display = 'block';
+        });
+
+        // Handle logout with confirmation
+        document.getElementById('logout-link').addEventListener('click', function() {
+            const isConfirmed = confirm('Are you sure you want to log out?');
+            if (isConfirmed) {
+                localStorage.removeItem('username');
+                window.location.href = '/login/';
+            }
+        });
+
+        // Set the default content to be displayed on page load
+        document.getElementById('dashboard-content').style.display = 'block';  // Display Dashboard by default
+        setActiveLink('dashboard');  // Make sure the Dashboard link is active
+    });
+</script>
+{% endblock %}
