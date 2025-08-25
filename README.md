@@ -1,0 +1,1 @@
+Project is all about water application.Its purpose was to help Kakamega County Water and Sanitation Company to have a web portal app to enable its customers apply for water, send complaints and check feedback. The language i used is python with django framework and the database is xamp
